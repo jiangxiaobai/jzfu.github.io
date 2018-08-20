@@ -43,9 +43,9 @@ email: 229346459@qq.com
 color: '#3F51B5'
 
 # 页面标题
-tags_title: Tags
-archives_title: Archives
-categories_title: Categories
+tags_title: 标签
+archives_title: 归档
+categories_title: 分类
 
 # 文章截断
 excerpt_render: false
@@ -142,7 +142,7 @@ canonical: false
 since_year: 2015
 
 # 用户页面中作者相关的描述性文字，如不需要设为 false
-about: 用户页面中作者相关的描述性文字，如不需要设为 false
+about: 吾生也有涯，而知也无涯，在知识的汪洋学海里，要像大虫子一样学会虎食鲸吞；山外有山,人外有人，在高手如云的茫茫人海中，要像小白痴一样学会虛心请教。
 
 # “不蒜子”访问量统计，详见 http://ibruce.info/2015/04/04/busuanzi/
 visit_counter:
