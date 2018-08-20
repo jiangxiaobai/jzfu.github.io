@@ -79,5 +79,5 @@ theme: indigo
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repository: git@github.com:jiangxiaobai/jzfu.github.io.git
+  repository: git@github.com:jiangxiaobai/jiangxiaobai.github.io.git
   branch: master
