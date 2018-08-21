@@ -118,6 +118,8 @@ no changes added to commit
 ```
 * 推送到github
 ```
+$ git add .
+$ git commit -m "更新Hexo源代码文件"
 $ git push
 Warning: Permanently added the RSA host key for IP address '52.74.223.119' to th                                                                                 e list of known hosts.
 Everything up-to-date
@@ -135,3 +137,15 @@ $ hexo d -g
 #### 记得`git push`！！！
 #### 记得`git push`！！！
 #### 记得`git push`！！！
+
+### 可能会遇到这个错误：`fatal: in unpopulated submodule '.deploy_git'`。解决方法如下：
+1、这种情况可以先安装下相关的依赖：
+```
+npm install hexo-deployer-git –save
+```
+2、实在不行，就把它删掉，然后重新生成和部署。
+```
+rm -rf .deploy_git
+hexo g
+hexo d
+```
