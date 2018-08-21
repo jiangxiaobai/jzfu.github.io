@@ -28,7 +28,7 @@ menu:
     target: _blank
 
 # 你的头像url
-avatar: /img/avatar.jpg
+avatar: /img/myimg/avatar.jpg
 # avatar link
 avatar_link: /
 # 头像背景图
@@ -43,9 +43,9 @@ email: 229346459@qq.com
 color: '#3F51B5'
 
 # 页面标题
-tags_title: 标签
-archives_title: 归档
-categories_title: 分类
+tags_title: 文章标签
+archives_title: 文章归档
+categories_title: 文章分类
 
 # 文章截断
 excerpt_render: false
@@ -63,8 +63,8 @@ share: true
 # 是否开启打赏，关闭 reward: false
 reward:
   title: 谢谢大爷~
-  wechat: /img/wechat.jpg     #微信，关闭设为 false
-  alipay: /img/alipay.jpg     #支付宝，关闭设为 false
+  wechat: /img/myimg/wechat.jpg     #微信，关闭设为 false
+  alipay: /img/myimg/alipay.jpg     #支付宝，关闭设为 false
 
 # 是否开启搜索
 search: true
