@@ -4,7 +4,7 @@ date: 2018-08-21 08:38:28
 tags:
   - Git
 categories: 
-- Git教程
+- 版本控制
 ---
 Git几个专用名词的译名如下:
 Workspace：工作区
