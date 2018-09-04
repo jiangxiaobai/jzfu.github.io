@@ -38,6 +38,7 @@ $ cp -r /usr/share/easy-rsa/*  ~/openvpn-ca
 `$ vim vars`
 　　在这个文件里面，你会发现许多变量，这些变量用于决定怎样生成你的证书，你可以修改这些变量的值。在这里我们只需要关注几个变量就行。
 　　在文件的底部，找到如下信息：
+```
 ~/openvpn-ca/vars
 . . .
  
@@ -49,7 +50,9 @@ exportKEY_EMAIL="me@myhost.mydomain"
 exportKEY_OU="MyOrganizationalUnit"
  
 . . .
+```
 　　将这些值编辑成任何你喜欢的，但不要让它们空着，比如我的：
+```
 ~/openvpn-ca/vars
  
 . . .
@@ -62,9 +65,12 @@ export KEY_EMAIL="jsfw@ddmg.com"
 export KEY_OU="JSZX"
 
 . . .
+```
 　　到这步之后，我们再编辑KEY_NAME的值，简单起见，我们将它命名为server，如下：
+```
 ~/openvpn-ca/vars
 export KEY_NAME="server"
+```
 　　完成之后，保存并退出。
 
 ##### 第四步：制作CA
@@ -86,13 +92,14 @@ NOTE: If you run ./clean-all, I will be doing a rm -rf on /home/sammy/openvpn-ca
 　　接下来，我们将制作服务端所需要的证书，这些证书就像传统的用于加密过程的文件一样。通过键入如下命令来生成服务端所需的证书：
 `$ ./build-key-server server`
 上面的server就是我们在vars文件中填入的export KEY_NAME="server"，如果你不是填入的server这个名称，则./build-key-server后面输入你自己填的那个名称。制作过程中一路回车，中间出现 challenge password ，不要输入任何值回车就行，最后的会有两个问题，输入y就行，如下所示：
+```
 . . .
 Certificate is to be certified until May  1 17:51:16 2026 GMT (3650 days)
 Sign the certificate? [y/n]:y
 1 out of 1 certificate requests certified, commit? [y/n]y
 Write out database with 1 new entries
 Data Base Updated
-
+```
 　　如果以上操作无误的话应该可以看到生成的server.crt、server.key和server.csr三个文件。其中server.crt和server.key两个文件是我们所需要的。现在再为服务器生成加密交换时的Diffie-Hellman文件。输入以下命令：
 `$ ./build-dh`
 完成这一步可能需要几分钟时间。
@@ -135,44 +142,59 @@ $ sudo vim /etc/openvpn/server.conf
 
 基本配置步骤如下：
 首先，通过查找tls-auth指令找到HMAC部分，移除";"来解注释tls-auth，并且在tls-auth的下面，增加一个key-direction参数，设置其参数值为0，如下：
+```
 /etc/openvpn/server.conf
 tls-auth ta.key 0 # This file is secret
 key-direction 0
+```
 然后，通过查找被注释的clipher这一行找到加密密码的部分，aes128-cbc密码提供了很好的加密级别，并且得到了很好的支持。移除";"来解注释cipher AES-128-CBC，如下：
+```
 /etc/openvpn/server.conf
 cipher AES-128-CBC
+```
 在这一行的下面，添加一个auth行（身份验证行）来选择HMAC消息摘要算法，这里推荐SHA256消息摘要算法：
-etc/openvpn/server.conf
+```
+/etc/openvpn/server.conf
 auth SHA256
+```
 最后，找到user和group参数，去除它们之前的";"，如下：
+```
 /etc/openvpn/server.conf
 user nobody
 group nogroup
+```
 （可选配置）推动DNS更改让VPN重定向所有流量
 　　上面的配置可以在客户端和服务器端上创建VPN连接，但是没有强迫连接去使用tunnel。如果你希望用VPN来路由你的所有流量，你需要更改你的客户端机器的DNS设置。
 你可以按照以下步骤设置，解注释一些指令使得你的客户端机器把所有的web流量重定向到VPN上面，找到redirect-gateway部分然后移除它之前的";"，如下：
+```
 /etc/openvpn/server.conf
 push "redirect-gateway def1 bypass-dhcp"
+```
 在这条指令的下面，找到dhcp-option部分，移除这两行之前的";"，如下：
+```
 push "dhcp-option DNS 223.5.5.5"
 push "dhcp-option DNS 114.114.114.114"
-
+```
 这就可以协助客户版重新配置DNS，以便使用VPN tunnel来作为默认网关。
 （可选配置）修改OpenVPN服务器的端口和协议
 　　OpenVPN服务器默认使用1194端口和UDP协议来接收客户端的连接，也许由于客户端那边的网络环境限制，你需要使用一个不同的端口，那么你可以改变port选项，如果你的Ubuntu16.04服务器没有托管web服务，那么443端口是一个可替换1194的不错选择，因为防火墙往往对443端口不受限。
+```
 /etc/openvpn/server.conf
 port 4433
-
+```
 我们同样可以将协议从UDP换成TCP：
+```
 /etc/openvpn/server.conf
 proto tcp
+```
 如果你没有更换端口的需求，最好将上述的两项保持默认设置。
 （可选配置）指定非默认的凭证（Point to Non-Default Credentials）
 　　如果你在之前的./build-key-server命令用了不同的名字（我们之前用的server这个名字），那么修改cert和key这两行，将这两行的值设为你之前用的那个名字.crt和你之前那个名字.key，如果你默认使用的server这个名字，那么这里你已经正确的设置好了，如下：
+```
 /etc/openvpn/server.conf
 cert server.crt
 key server.key
- 
+``` 
 以上设置完毕之后，保存并退出server.conf这个文件。完成后的文件内容是这样的`cat server.conf |grep -Ev "^#|^$"`：
 ```
 ;local a.b.c.d
@@ -242,6 +264,7 @@ default via 192.168.3.253 dev eth0
 当你有一个与你的默认路由相关联的接口的时候，打开/etc/ufw/before.rules这个文件并添加相应的规则：
 `$ sudo vim /etc/ufw/before.rules`
 这个文件处理在加载常规UFW规则之前应该被放置的文件，在这个文件的最开始处加入下面的内容。这样可以为nat表设置POSTROUTING默认规则，并且为来自VPN的任何流量设置伪装连接。
+```
 /etc/ufw/before.rules
 ```
 #
@@ -271,8 +294,10 @@ COMMIT
 然后告诉防火墙默认允许转发包：
 `$ sudo vim /etc/default/ufw`
 在这个文件里面，找到DEFAULT_FORWARD_POLICY指令，将它的值从DROP改成ACCEPT：
+```
 /etc/default/ufw
 DEFAULT_FORWARD_POLICY="ACCEPT"
+```
 完成后保存并退出。
 3.打开OpenVPN端口并且使变化生效
 　　接下来，调整防火墙本身，以允许流量到OpenVPN。如果你在/etc/openvpn/server.conf文件中没有修改OpenVPN的端口号和协议类型，那么直接配置防火墙允许UDP流量到1194端口，如果你改变了端口和协议类型，那么根据你自己设置的端口和协议类型进行配置。
@@ -294,6 +319,7 @@ $ sudo ufw enable
 通过如下命令再次确认OpenVPN服务已经成功地开启了：
 `$ sudo systemctl status openvpn@server`
 如果一切正常的话，你的输出应当跟如下类似:
+```
 ● openvpn@server.service - OpenVPN connection to server
    Loaded: loaded (/lib/systemd/system/openvpn@.service; enabled; vendor preset: enabled)
    Active: active (running) since Mon 2018-09-03 20:01:01 CST; 21h ago
@@ -308,15 +334,16 @@ $ sudo ufw enable
 Sep 03 20:01:00 eoc-std02 systemd[1]: Starting OpenVPN connection to server...
 Sep 03 20:01:01 eoc-std02 systemd[1]: openvpn@server.service: Failed to read PID from file /run/openvpn/server.pid: Invalid argument
 Sep 03 20:01:01 eoc-std02 systemd[1]: Started OpenVPN connection to server.
- 
+```
 你可以通过如下命令来确认OpenVPN tun0接口是否可用
 `$ ip addr show tun0`
 你应该可以看到一个配置接口：
+```
 3: tun0: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UNKNOWN group default qlen 100
     link/none
     inet 10.8.0.1 peer 10.8.0.2/32 scope global tun0
        valid_lft forever preferred_lft forever
-
+```
 如果一切运行正常，将OpenVPN设置为开机自启动：
 `$ sudo systemctl enable openvpn@server`
 
@@ -334,6 +361,7 @@ Sep 03 20:01:01 eoc-std02 systemd[1]: Started OpenVPN connection to server.
 `$ cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf     ~/client-configs/base.conf`
 打开base.conf并做一些修改：
 首先，找到remote指令，这条指令用于指定OpenVPN服务器所在的地址，这个地址应当是你的OpenVPN所在的服务器的公网IP地址。如果你改变了OpenVPN监听的端口，那么把1194换成你所设置的端口：
+```
 ~/client-configs/base.conf
 . . .
 # The hostname/IP and port of the server.
@@ -341,18 +369,21 @@ Sep 03 20:01:01 eoc-std02 systemd[1]: Started OpenVPN connection to server.
 # to load balance between the servers.
 remote server_IP_address 4433
 . . .
+```
 确保你在server配置文件(/etc/openvpn/server.conf文件)里面你所设置的协议类型：
 ~/client-configs/base.conf
 proto tcp
 
 然后去除user和group指令前面的";"，如下：
+```
 ~/client-configs/base.conf
 # Downgrade privileges after initialization (non-Windowsonly)
 user nobody
 group nogroup
-
+```
 然后找到设置ca，cert和key的指令，将这些指令注释掉，因为我们会在这个配置文件里面自己设置certs和keys的值：
 ~/client-configs/base.conf
+```
 # SSL/TLS parms.
 # See the server config file for more
 # description. It's best to use
@@ -362,6 +393,7 @@ group nogroup
 #ca ca.crt
 #cert client.crt
 #key client.key
+```
 然后镜像（或者说模仿）我们在/etc/openvpn/server.conf文件里面设置的cipher和auth：
 ~/client-configs/base.conf
 cipher AES-128-CBC
@@ -371,9 +403,11 @@ auth SHA256
 key-direction 1
 最后添加一些注释信息，我们希望配置信息能够用于所有的客户端，但是下面的注释信息只能用于Linux客户端：
 ~/client-configs/base.conf
+```
 # script-security 2
 # up /etc/openvpn/update-resolv-conf
 # down /etc/openvpn/update-resolv-conf
+```
 如果你的客户端运行在Linux上面并且有一个/etc/openvpn/update-resolv-conf文件，你应当将上面的三条指令解注释。
 最后保存并退出base.conf文件。最后保存的文件是这样的`cat base.conf`：
 ```
