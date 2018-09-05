@@ -12,6 +12,7 @@ categories:
 #### 前提条件
 拥于公网固定IP地址的Ubuntu 16.04服务器。具有sudo权限的非root用户，当然如果你就是root更好。达到这些条件之后，用你的sudo用户登录到你的Ubuntu服务器，然后继续按照以下步骤进行。
 
+#### 安装步骤
 ##### 第一步：安装OpenVPN
 OpenVPN在Ubuntu的默认仓库中是可用的，所以我们可用使用apt来安装。我们还需安装一个easy-rsa包，这个包可以帮助我们建立一个内部CA（certificate authority）用于使用我们VPN。
 更新你的服务器包索引并安装必要的包类型：
