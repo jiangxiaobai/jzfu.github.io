@@ -178,8 +178,8 @@ proto tcp
 cert server.crt
 key server.key
 ``` 
-
-以上设置完毕之后，保存并退出server.conf这个文件。完成后的文件内容是这样的`cat server.conf |grep -Ev "^#|^$"`：
+以上设置完毕之后，保存并退出server.conf这个文件。完成后的文件内容是这样的：
+`cat server.conf |grep -Ev "^#|^$"`
 ```bash
 ;local a.b.c.d
 port 4433
