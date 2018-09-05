@@ -39,12 +39,12 @@ $ cp -r /usr/share/easy-rsa/*  ~/openvpn-ca
 `$ vim vars`
 在这个文件里面，你会发现许多变量，这些变量用于决定怎样生成你的证书，你可以修改这些变量的值。在这里我们只需要关注几个变量就行。在文件的底部，找到如下信息：
 ```bash
-exportKEY_COUNTRY="US"
-exportKEY_PROVINCE="CA"
-exportKEY_CITY="SanFrancisco"
-exportKEY_ORG="Fort-Funston"
-exportKEY_EMAIL="me@myhost.mydomain"
-exportKEY_OU="MyOrganizationalUnit"
+export KEY_COUNTRY="US"
+export KEY_PROVINCE="CA"
+export KEY_CITY="SanFrancisco"
+export KEY_ORG="Fort-Funston"
+export KEY_EMAIL="me@myhost.mydomain"
+export KEY_OU="MyOrganizationalUnit"
 ```
 
 将这些值编辑成任何你喜欢的，但不要让它们空着，比如我的：
@@ -82,7 +82,7 @@ NOTE: If you run ./clean-all, I will be doing a rm -rf on /home/sammy/openvpn-ca
 ##### 第五步：制作Server端的 Server Certificate, Key, Encryption Files
 接下来，我们将制作服务端所需要的证书，这些证书就像传统的用于加密过程的文件一样。通过键入如下命令来生成服务端所需的证书：
 `$ ./build-key-server server`
-上面的server就是我们在vars文件中填入的export KEY_NAME="server"，如果你不是填入的server这个名称，则./build-key-server后面输入你自己填的那个名称。制作过程中一路回车，中间出现 challenge password ，不要输入任何值回车就行，最后的会有两个问题，输入y就行，如下所示：
+上面的server就是我们在vars文件中填入的export KEY_NAME="server"，如果你不是填入的server这个名称，则./build-key-server后面输入你自己填的那个名称。制作过程中一路回车，中间出现 challenge password ，不要输入任何值回车就行，最后的会有两个问题，输入`y`就行，如下所示：
 ```
 Certificate is to be certified until May  1 17:51:16 2026 GMT (3650 days)
 Sign the certificate? [y/n]:y
@@ -109,7 +109,7 @@ $ cd ~/openvpn-ca
 $ source vars
 $ ./build-key-pass client1
 ```
-然后一路回车，中间出现challenge password，不要输入任何值回车就行，最后的会有两个问题，输入y就行。
+然后一路回车，中间出现challenge password，不要输入任何值回车就行，最后的会有两个问题，输入`y`就行。
 
 ##### 第七步：配置OpenVPN服务器
 接下来，我们利用已经生成的相关文件来配置OpenVPN服务器。
@@ -147,6 +147,7 @@ auth SHA256
 user nobody
 group nogroup
 ```
+
 （可选配置）推动DNS更改让VPN重定向所有流量
 上面的配置可以在客户端和服务器端上创建VPN连接，但是没有强迫连接去使用tunnel。如果你希望用VPN来路由你的所有流量，你需要更改你的客户端机器的DNS设置。
 你可以按照以下步骤设置，解注释一些指令使得你的客户端机器把所有的web流量重定向到VPN上面，找到redirect-gateway部分然后移除它之前的";"，如下：
@@ -159,6 +160,7 @@ push "dhcp-option DNS 223.5.5.5"
 push "dhcp-option DNS 114.114.114.114"
 ```
 这就可以协助客户版重新配置DNS，以便使用VPN tunnel来作为默认网关。
+
 （可选配置）修改OpenVPN服务器的端口和协议
 OpenVPN服务器默认使用1194端口和UDP协议来接收客户端的连接，也许由于客户端那边的网络环境限制，你需要使用一个不同的端口，那么你可以改变port选项，如果你的Ubuntu16.04服务器没有托管web服务，那么443端口是一个可替换1194的不错选择，因为防火墙往往对443端口不受限。
 ```bash
@@ -169,12 +171,14 @@ port 4433
 proto tcp
 ```
 如果你没有更换端口的需求，最好将上述的两项保持默认设置。
+
 （可选配置）指定非默认的凭证（Point to Non-Default Credentials）
 如果你在之前的./build-key-server命令用了不同的名字（我们之前用的server这个名字），那么修改cert和key这两行，将这两行的值设为你之前用的那个名字.crt和你之前那个名字.key，如果你默认使用的server这个名字，那么这里你已经正确的设置好了，如下：
 ```bash
 cert server.crt
 key server.key
 ``` 
+
 以上设置完毕之后，保存并退出server.conf这个文件。完成后的文件内容是这样的`cat server.conf |grep -Ev "^#|^$"`：
 ```bash
 ;local a.b.c.d
