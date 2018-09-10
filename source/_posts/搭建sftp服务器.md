@@ -46,7 +46,7 @@ X11Forwarding no
 6. 设置Chroot目录权限
 ```bash
 chown root:sftp /data/sftp/mysftp  
-chmod 755 /data/sftp/mys
+chmod 755 /data/sftp/mysftp
 ```
 
 7. 新建一个目录供stp用户mysftp上传文件，这个目录所有者为mysftp所有组为sftp，所有者有写入权限所有组无写入权限
